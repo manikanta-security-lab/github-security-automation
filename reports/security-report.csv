@@ -1,4 +1,5 @@
 "Repository","FindingType","Severity","Description","Recommendation"
+"security-demo-api","Secret Exposure","Critical","Controlled validation test: simulated exposed credential detected in repository.","Revoke and rotate the exposed credential immediately. Remove the secret from source control and review repository history."
 "security-demo-api","Public Repository","Medium","Repository is publicly visible.","Review whether public visibility is required. Use private visibility for repositories containing sensitive code, configuration, or security-related material."
 "security-demo-web","Public Repository","Medium","Repository is publicly visible.","Review whether public visibility is required. Use private visibility for repositories containing sensitive code, configuration, or security-related material."
 "security-demo-tools","Public Repository","Medium","Repository is publicly visible.","Review whether public visibility is required. Use private visibility for repositories containing sensitive code, configuration, or security-related material."
@@ -7,3 +8,4 @@
 "security-demo-tools","Write-Level Access","Medium","Mani27022 has write-level access to the repository.","Review whether write access is required. Apply least-privilege access and remove unnecessary write permissions."
 "security-demo-empty","Empty Repository","Low","Repository contains no commits and may require cleanup or lifecycle review.","Confirm whether the repository is still required. Archive or remove unused repositories according to organizational policy."
 "security-demo-empty","No Recent Repository Activity","Low","No commits were detected during the configured lookback period.","Confirm whether the repository is still required. Archive or remove unused repositories according to organizational policy."
+"security-demo-api","Merged PR Without Approval","High","Pull request #2 was merged without an approved review.","Require at least one approved code review before merging pull requests, especially for security-sensitive repositories."

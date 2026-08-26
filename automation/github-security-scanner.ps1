@@ -189,6 +189,14 @@ $reviewResults     = @()
 
 foreach ($repo in $repositories) {
 
+    # Skip the automation project repository.
+    # This repository contains the scanner itself and is not a demo target.
+    if ($repo.name -eq "github-security-automation") {
+        Write-Host ""
+        Write-Host "Skipping automation project repository: $($repo.name)"
+        continue
+    }
+
     Write-Host ""
     Write-Host "---------------------------------------------"
     Write-Host "Processing repository: $($repo.name)"
@@ -340,18 +348,14 @@ foreach ($repo in $repositories) {
 
 foreach ($pr in $pullRequests) {
 
-    $reviews = Get-PullRequestReviews `
+    $reviews = @(Get-PullRequestReviews `
         -Org $Org `
         -Repo $repoName `
-        -PullRequestNumber $pr.number
+        -PullRequestNumber $pr.number)
 
     Write-Host "PR #$($pr.number): $($reviews.Count) reviews"
 
-    # --------------------------------------
-    # No reviews
-    # --------------------------------------
-
-    if ($null -eq $reviews -or $reviews.Count -eq 0) {
+    if ($reviews.Count -eq 0) {
 
         $reviewResults += [PSCustomObject]@{
             Repository        = $repoName
@@ -363,12 +367,8 @@ foreach ($pr in $pullRequests) {
             ReviewState       = "NO_REVIEW"
             SubmittedAt       = $null
         }
+
     }
-
-    # --------------------------------------
-    # Reviews exist
-    # --------------------------------------
-
     else {
 
         foreach ($review in $reviews) {
@@ -386,7 +386,7 @@ foreach ($pr in $pullRequests) {
         }
     }
 }
-
+}
 # -----------------------------
 # Save results
 # -----------------------------

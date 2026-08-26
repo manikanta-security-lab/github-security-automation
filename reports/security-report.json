@@ -1,6 +1,13 @@
 [
     {
         "Repository":  "security-demo-api",
+        "FindingType":  "Secret Exposure",
+        "Severity":  "Critical",
+        "Description":  "Controlled validation test: simulated exposed credential detected in repository.",
+        "Recommendation":  "Revoke and rotate the exposed credential immediately. Remove the secret from source control and review repository history."
+    },
+    {
+        "Repository":  "security-demo-api",
         "FindingType":  "Public Repository",
         "Severity":  "Medium",
         "Description":  "Repository is publicly visible.",
@@ -54,5 +61,12 @@
         "Severity":  "Low",
         "Description":  "No commits were detected during the configured lookback period.",
         "Recommendation":  "Confirm whether the repository is still required. Archive or remove unused repositories according to organizational policy."
+    },
+    {
+        "Repository":  "security-demo-api",
+        "FindingType":  "Merged PR Without Approval",
+        "Severity":  "High",
+        "Description":  "Pull request #2 was merged without an approved review.",
+        "Recommendation":  "Require at least one approved code review before merging pull requests, especially for security-sensitive repositories."
     }
 ]

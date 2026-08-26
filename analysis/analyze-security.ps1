@@ -14,22 +14,43 @@ Write-Host ""
 # Load scanner results
 # ---------------------------------------------
 
-$repositories = Get-Content ".\data\repositories.json" -Raw |
-    ConvertFrom-Json
+function Load-JsonArray {
+    param (
+        [Parameter(Mandatory = $true)]
+        [string]$Path
+    )
 
-$members = Get-Content ".\data\members.json" -Raw |
-    ConvertFrom-Json
+    if (-not (Test-Path $Path)) {
+        Write-Warning "File not found: $Path"
+        return @()
+    }
 
-$advisories = Get-Content ".\data\advisories.json" -Raw |
-    ConvertFrom-Json
+    $content = Get-Content $Path -Raw
 
-$activity = Get-Content ".\data\activity.json" -Raw |
-    ConvertFrom-Json
+    if ([string]::IsNullOrWhiteSpace($content)) {
+        return @()
+    }
 
-$reviews = @(
-    Get-Content ".\data\reviews.json" -Raw |
-        ConvertFrom-Json
-)
+    $parsed = ConvertFrom-Json $content
+
+    # Force every JSON array element to become a separate PowerShell object.
+    if ($parsed -is [System.Array]) {
+        return @($parsed | ForEach-Object { $_ })
+    }
+
+    # Handle a single JSON object.
+    return @($parsed)
+}
+
+
+# Load all scanner output files
+$repositories = Load-JsonArray ".\data\repositories.json"
+$members      = Load-JsonArray ".\data\members.json"
+$advisories   = Load-JsonArray ".\data\advisories.json"
+$activity     = Load-JsonArray ".\data\activity.json"
+$reviews      = Load-JsonArray ".\data\reviews.json"
+$testFindings = Load-JsonArray ".\data\security-test-findings.json"
+
 
 Write-Host "Repositories loaded      : $($repositories.Count)"
 Write-Host "Member access records    : $($members.Count)"
@@ -42,6 +63,21 @@ Write-Host "Review records loaded    : $($reviews.Count)"
 # ---------------------------------------------
 
 $findings = @()
+
+# ---------------------------------------------
+# Controlled Security Validation Findings
+# ---------------------------------------------
+
+foreach ($testFinding in $testFindings) {
+
+    $findings += [PSCustomObject]@{
+        Repository     = $testFinding.Repository
+        FindingType    = $testFinding.FindingType
+        Severity       = $testFinding.Severity
+        Description    = $testFinding.Description
+        Recommendation = $testFinding.Recommendation
+    }
+}
 
 # ---------------------------------------------
 # Check 1: Public repositories

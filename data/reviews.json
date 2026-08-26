@@ -1,10 +1,22 @@
-{
-    "Repository":  "security-demo-api",
-    "PullRequest":  1,
-    "PullRequestAuthor":  "Mani27022",
-    "PullRequestState":  "closed",
-    "MergedAt":  "2026-08-26T13:58:35Z",
-    "Reviewer":  "mani1234543",
-    "ReviewState":  "APPROVED",
-    "SubmittedAt":  "2026-08-26T13:56:26Z"
-}
+[
+    {
+        "Repository":  "security-demo-api",
+        "PullRequest":  2,
+        "PullRequestAuthor":  "mani1234543",
+        "PullRequestState":  "closed",
+        "MergedAt":  "2026-08-26T19:09:24Z",
+        "Reviewer":  null,
+        "ReviewState":  null,
+        "SubmittedAt":  null
+    },
+    {
+        "Repository":  "security-demo-api",
+        "PullRequest":  1,
+        "PullRequestAuthor":  "Mani27022",
+        "PullRequestState":  "closed",
+        "MergedAt":  "2026-08-26T13:58:35Z",
+        "Reviewer":  "mani1234543",
+        "ReviewState":  "APPROVED",
+        "SubmittedAt":  "2026-08-26T13:56:26Z"
+    }
+]
