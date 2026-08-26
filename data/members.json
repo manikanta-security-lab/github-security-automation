@@ -1,0 +1,74 @@
+[
+    {
+        "Repository":  "security-demo-api",
+        "Login":  "mani1234543",
+        "Admin":  true,
+        "Maintain":  true,
+        "Push":  true,
+        "Triage":  true,
+        "Pull":  true
+    },
+    {
+        "Repository":  "security-demo-api",
+        "Login":  "Mani27022",
+        "Admin":  false,
+        "Maintain":  false,
+        "Push":  true,
+        "Triage":  true,
+        "Pull":  true
+    },
+    {
+        "Repository":  "security-demo-web",
+        "Login":  "mani1234543",
+        "Admin":  true,
+        "Maintain":  true,
+        "Push":  true,
+        "Triage":  true,
+        "Pull":  true
+    },
+    {
+        "Repository":  "security-demo-web",
+        "Login":  "Mani27022",
+        "Admin":  false,
+        "Maintain":  false,
+        "Push":  false,
+        "Triage":  false,
+        "Pull":  true
+    },
+    {
+        "Repository":  "security-demo-tools",
+        "Login":  "mani1234543",
+        "Admin":  true,
+        "Maintain":  true,
+        "Push":  true,
+        "Triage":  true,
+        "Pull":  true
+    },
+    {
+        "Repository":  "security-demo-tools",
+        "Login":  "Mani27022",
+        "Admin":  false,
+        "Maintain":  false,
+        "Push":  true,
+        "Triage":  true,
+        "Pull":  true
+    },
+    {
+        "Repository":  "security-demo-empty",
+        "Login":  "mani1234543",
+        "Admin":  true,
+        "Maintain":  true,
+        "Push":  true,
+        "Triage":  true,
+        "Pull":  true
+    },
+    {
+        "Repository":  "security-demo-empty",
+        "Login":  "Mani27022",
+        "Admin":  false,
+        "Maintain":  false,
+        "Push":  false,
+        "Triage":  false,
+        "Pull":  true
+    }
+]

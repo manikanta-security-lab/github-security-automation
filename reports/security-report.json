@@ -1,0 +1,58 @@
+[
+    {
+        "Repository":  "security-demo-api",
+        "FindingType":  "Public Repository",
+        "Severity":  "Medium",
+        "Description":  "Repository is publicly visible.",
+        "Recommendation":  "Review whether public visibility is required. Use private visibility for repositories containing sensitive code, configuration, or security-related material."
+    },
+    {
+        "Repository":  "security-demo-web",
+        "FindingType":  "Public Repository",
+        "Severity":  "Medium",
+        "Description":  "Repository is publicly visible.",
+        "Recommendation":  "Review whether public visibility is required. Use private visibility for repositories containing sensitive code, configuration, or security-related material."
+    },
+    {
+        "Repository":  "security-demo-tools",
+        "FindingType":  "Public Repository",
+        "Severity":  "Medium",
+        "Description":  "Repository is publicly visible.",
+        "Recommendation":  "Review whether public visibility is required. Use private visibility for repositories containing sensitive code, configuration, or security-related material."
+    },
+    {
+        "Repository":  "security-demo-empty",
+        "FindingType":  "Public Repository",
+        "Severity":  "Medium",
+        "Description":  "Repository is publicly visible.",
+        "Recommendation":  "Review whether public visibility is required. Use private visibility for repositories containing sensitive code, configuration, or security-related material."
+    },
+    {
+        "Repository":  "security-demo-api",
+        "FindingType":  "Write-Level Access",
+        "Severity":  "Medium",
+        "Description":  "Mani27022 has write-level access to the repository.",
+        "Recommendation":  "Review whether write access is required. Apply least-privilege access and remove unnecessary write permissions."
+    },
+    {
+        "Repository":  "security-demo-tools",
+        "FindingType":  "Write-Level Access",
+        "Severity":  "Medium",
+        "Description":  "Mani27022 has write-level access to the repository.",
+        "Recommendation":  "Review whether write access is required. Apply least-privilege access and remove unnecessary write permissions."
+    },
+    {
+        "Repository":  "security-demo-empty",
+        "FindingType":  "Empty Repository",
+        "Severity":  "Low",
+        "Description":  "Repository contains no commits and may require cleanup or lifecycle review.",
+        "Recommendation":  "Confirm whether the repository is still required. Archive or remove unused repositories according to organizational policy."
+    },
+    {
+        "Repository":  "security-demo-empty",
+        "FindingType":  "No Recent Repository Activity",
+        "Severity":  "Low",
+        "Description":  "No commits were detected during the configured lookback period.",
+        "Recommendation":  "Confirm whether the repository is still required. Archive or remove unused repositories according to organizational policy."
+    }
+]

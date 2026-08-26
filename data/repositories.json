@@ -1,0 +1,34 @@
+[
+    {
+        "Repository":  "security-demo-api",
+        "Private":  false,
+        "Archived":  false,
+        "Fork":  false,
+        "DefaultBranch":  "main",
+        "Empty":  false
+    },
+    {
+        "Repository":  "security-demo-web",
+        "Private":  false,
+        "Archived":  false,
+        "Fork":  false,
+        "DefaultBranch":  "main",
+        "Empty":  false
+    },
+    {
+        "Repository":  "security-demo-tools",
+        "Private":  false,
+        "Archived":  false,
+        "Fork":  false,
+        "DefaultBranch":  "main",
+        "Empty":  false
+    },
+    {
+        "Repository":  "security-demo-empty",
+        "Private":  false,
+        "Archived":  false,
+        "Fork":  false,
+        "DefaultBranch":  "main",
+        "Empty":  true
+    }
+]
