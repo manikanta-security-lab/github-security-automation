@@ -334,18 +334,42 @@ foreach ($repo in $repositories) {
 
     Write-Host "Pull requests found: $($pullRequests.Count)"
 
-    # ------------------------------------------
-    # Reviews
-    # ------------------------------------------
+# ------------------------------------------
+# Reviews
+# ------------------------------------------
 
-    foreach ($pr in $pullRequests) {
+foreach ($pr in $pullRequests) {
 
-        $reviews = Get-PullRequestReviews `
-            -Org $Org `
-            -Repo $repoName `
-            -PullRequestNumber $pr.number
+    $reviews = Get-PullRequestReviews `
+        -Org $Org `
+        -Repo $repoName `
+        -PullRequestNumber $pr.number
 
-        Write-Host "PR #$($pr.number): $($reviews.Count) reviews"
+    Write-Host "PR #$($pr.number): $($reviews.Count) reviews"
+
+    # --------------------------------------
+    # No reviews
+    # --------------------------------------
+
+    if ($null -eq $reviews -or $reviews.Count -eq 0) {
+
+        $reviewResults += [PSCustomObject]@{
+            Repository        = $repoName
+            PullRequest       = $pr.number
+            PullRequestAuthor = $pr.user.login
+            PullRequestState  = $pr.state
+            MergedAt          = $pr.merged_at
+            Reviewer          = $null
+            ReviewState       = "NO_REVIEW"
+            SubmittedAt       = $null
+        }
+    }
+
+    # --------------------------------------
+    # Reviews exist
+    # --------------------------------------
+
+    else {
 
         foreach ($review in $reviews) {
 
