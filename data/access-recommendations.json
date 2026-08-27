@@ -1,0 +1,42 @@
+[
+    {
+        "Repository":  "security-demo-api",
+        "Member":  "Mani27022",
+        "Permission":  "write",
+        "ContributionScore":  10,
+        "ContributionLevel":  "Low",
+        "Recommendation":  "REVIEW_ACCESS",
+        "Reason":  "Low contribution score based on available commits, pull requests, reviews, and recent activity.",
+        "AutomaticRemoval":  false
+    },
+    {
+        "Repository":  "security-demo-web",
+        "Member":  "Mani27022",
+        "Permission":  "read",
+        "ContributionScore":  0,
+        "ContributionLevel":  "None",
+        "Recommendation":  "REVIEW_ACCESS",
+        "Reason":  "No measurable contribution activity was detected during the configured lookback period.",
+        "AutomaticRemoval":  false
+    },
+    {
+        "Repository":  "security-demo-tools",
+        "Member":  "Mani27022",
+        "Permission":  "write",
+        "ContributionScore":  0,
+        "ContributionLevel":  "None",
+        "Recommendation":  "REVIEW_ACCESS",
+        "Reason":  "No measurable contribution activity was detected during the configured lookback period.",
+        "AutomaticRemoval":  false
+    },
+    {
+        "Repository":  "security-demo-empty",
+        "Member":  "Mani27022",
+        "Permission":  "read",
+        "ContributionScore":  0,
+        "ContributionLevel":  "None",
+        "Recommendation":  "REVIEW_ACCESS",
+        "Reason":  "No measurable contribution activity was detected during the configured lookback period.",
+        "AutomaticRemoval":  false
+    }
+]
