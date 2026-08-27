@@ -1,0 +1,9 @@
+[
+    {
+        "Repository": "security-demo-api",
+        "FindingType": "Secret Exposure",
+        "Severity": "Critical",
+        "Description": "Controlled validation test: simulated exposed credential detected in repository.",
+        "Recommendation": "Revoke and rotate the exposed credential immediately. Remove the secret from source control and review repository history."
+    }
+]

@@ -4,390 +4,888 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>GitHub Security Operations Dashboard</title>
+    <title>GitHub Security & Access Hygiene</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        :root {
-            --bg: #0b1120;
-            --panel: #111827;
-            --panel-light: #172033;
-            --border: #263247;
-            --text: #f8fafc;
-            --muted: #94a3b8;
-
-            --critical: #ef4444;
-            --high: #f97316;
-            --medium: #f59e0b;
-            --low: #3b82f6;
-            --success: #22c55e;
-        }
-
         * {
             box-sizing: border-box;
         }
 
+        :root {
+            --bg: #070b14;
+            --bg-secondary: #0b1120;
+            --panel: #0f172a;
+            --panel-hover: #131d31;
+            --border: #1e293b;
+            --border-light: #263449;
+
+            --text: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --muted: #94a3b8;
+            --muted-dark: #64748b;
+
+            --critical: #ef4444;
+            --high: #f97316;
+            --medium: #eab308;
+            --low: #38bdf8;
+            --success: #22c55e;
+            --purple: #8b5cf6;
+            --cyan: #06b6d4;
+
+            --shadow:
+                0 20px 50px rgba(0, 0, 0, 0.25);
+        }
+
         body {
             margin: 0;
+            min-height: 100vh;
+            background:
+                radial-gradient(
+                    circle at top right,
+                    rgba(79, 70, 229, 0.10),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at top left,
+                    rgba(6, 182, 212, 0.06),
+                    transparent 25%
+                ),
+                var(--bg);
+
+            color: var(--text);
             font-family:
                 Inter,
-                ui-sans-serif,
-                system-ui,
-                -apple-system,
-                BlinkMacSystemFont,
                 "Segoe UI",
+                Roboto,
+                Arial,
                 sans-serif;
-            background: var(--bg);
-            color: var(--text);
         }
 
-        /* =========================================
-           HEADER
-        ========================================= */
-
-        .topbar {
-            border-bottom: 1px solid var(--border);
-            background: #0f172a;
-            padding: 22px 42px;
+        button,
+        input,
+        select {
+            font: inherit;
         }
 
-        .topbar-content {
-            max-width: 1400px;
+        .container {
+            max-width: 1550px;
             margin: auto;
+            padding: 28px;
+        }
 
+        /* =====================================================
+           HEADER
+        ===================================================== */
+
+        .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 20px;
+
+            padding: 26px 28px;
+            margin-bottom: 22px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(17, 24, 39, 0.98),
+                    rgba(15, 23, 42, 0.95)
+                );
+
+            border: 1px solid var(--border);
+            border-radius: 18px;
+
+            box-shadow: var(--shadow);
         }
 
         .brand {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 16px;
         }
 
         .brand-icon {
-            width: 44px;
-            height: 44px;
+            width: 52px;
+            height: 52px;
 
             display: flex;
             align-items: center;
             justify-content: center;
 
-            border-radius: 10px;
-            background: #1e293b;
+            border-radius: 14px;
 
-            font-size: 21px;
+            background:
+                linear-gradient(
+                    135deg,
+                    #4f46e5,
+                    #7c3aed
+                );
+
+            box-shadow:
+                0 10px 30px rgba(79, 70, 229, 0.25);
+
+            font-size: 25px;
         }
 
-        .brand h1 {
+        .header h1 {
             margin: 0;
-            font-size: 20px;
-            letter-spacing: -0.3px;
+
+            font-size: 27px;
+            font-weight: 800;
+
+            letter-spacing: -0.02em;
         }
 
-        .brand p {
-            margin: 4px 0 0;
+        .header p {
+            margin: 7px 0 0;
+
             color: var(--muted);
-            font-size: 12px;
+            font-size: 14px;
+        }
+
+        .header strong {
+            color: var(--text-secondary);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
         .scan-status {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 9px;
 
-            padding: 8px 13px;
+            padding: 10px 15px;
 
-            border: 1px solid #14532d;
-            border-radius: 20px;
+            border-radius: 999px;
 
-            background: #052e16;
+            background: rgba(34, 197, 94, 0.08);
+            border: 1px solid rgba(34, 197, 94, 0.20);
+
             color: #86efac;
 
             font-size: 12px;
-            font-weight: 600;
+            font-weight: 700;
         }
 
         .status-dot {
-            width: 7px;
-            height: 7px;
+            width: 8px;
+            height: 8px;
+
             border-radius: 50%;
+
             background: var(--success);
+
+            box-shadow:
+                0 0 0 4px rgba(34, 197, 94, 0.10);
         }
 
-        /* =========================================
-           MAIN
-        ========================================= */
-
-        .container {
-            max-width: 1400px;
-            margin: auto;
-            padding: 30px 42px 50px;
+        .scan-time {
+            color: var(--muted-dark);
+            font-size: 12px;
         }
 
-        .page-heading {
-            margin-bottom: 25px;
-        }
+        /* =====================================================
+           NAV
+        ===================================================== */
 
-        .page-heading h2 {
-            margin: 0;
-            font-size: 25px;
-            letter-spacing: -0.5px;
-        }
+        .nav {
+            display: flex;
+            gap: 5px;
 
-        .page-heading p {
-            margin: 7px 0 0;
-            color: var(--muted);
-            font-size: 13px;
-        }
+            padding: 5px;
+            margin-bottom: 22px;
 
-        /* =========================================
-           STATUS
-        ========================================= */
-
-        .status-message {
-            margin-bottom: 24px;
-
-            padding: 12px 16px;
-
-            border: 1px solid var(--border);
-            border-radius: 8px;
+            width: fit-content;
 
             background: var(--panel);
+            border: 1px solid var(--border);
 
-            color: #cbd5e1;
-            font-size: 13px;
+            border-radius: 12px;
         }
 
-        /* =========================================
+        .nav button {
+            border: 0;
+
+            padding: 9px 15px;
+
+            color: var(--muted);
+
+            background: transparent;
+
+            border-radius: 8px;
+
+            cursor: pointer;
+
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .nav button:hover {
+            color: var(--text);
+            background: var(--panel-hover);
+        }
+
+        .nav button.active {
+            color: white;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #4f46e5,
+                    #6366f1
+                );
+
+            box-shadow:
+                0 5px 15px rgba(79, 70, 229, 0.25);
+        }
+
+        /* =====================================================
            KPI CARDS
-        ========================================= */
+        ===================================================== */
 
         .kpi-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 16px;
 
-            margin-bottom: 25px;
+            grid-template-columns:
+                repeat(7, minmax(0, 1fr));
+
+            gap: 13px;
+
+            margin-bottom: 22px;
         }
 
-        .kpi-card {
+        .kpi {
             position: relative;
-            overflow: hidden;
 
-            padding: 20px;
+            padding: 18px;
 
-            background: var(--panel);
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(17, 24, 39, 0.98),
+                    rgba(15, 23, 42, 0.98)
+                );
 
             border: 1px solid var(--border);
-            border-radius: 10px;
+
+            border-radius: 14px;
+
+            overflow: hidden;
+
+            transition:
+                transform 0.2s ease,
+                border-color 0.2s ease;
         }
 
-        .kpi-card::before {
+        .kpi:hover {
+            transform: translateY(-2px);
+            border-color: var(--border-light);
+        }
+
+        .kpi::after {
             content: "";
 
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
 
-            height: 3px;
-        }
+            width: 85px;
+            height: 85px;
 
-        .kpi-total::before {
-            background: #64748b;
-        }
+            right: -35px;
+            bottom: -35px;
 
-        .kpi-critical::before {
-            background: var(--critical);
-        }
+            border-radius: 50%;
 
-        .kpi-high::before {
-            background: var(--high);
-        }
+            background: currentColor;
 
-        .kpi-medium::before {
-            background: var(--medium);
-        }
-
-        .kpi-low::before {
-            background: var(--low);
+            opacity: 0.05;
         }
 
         .kpi-label {
             color: var(--muted);
-            font-size: 12px;
-            font-weight: 600;
+
+            font-size: 10px;
+            font-weight: 800;
 
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.08em;
         }
 
         .kpi-value {
-            margin-top: 12px;
+            margin-top: 8px;
 
-            font-size: 32px;
-            line-height: 1;
-
-            font-weight: 700;
+            font-size: 29px;
+            font-weight: 850;
         }
 
-        .kpi-subtitle {
-            margin-top: 10px;
+        .kpi-meta {
+            margin-top: 4px;
 
-            color: #64748b;
-            font-size: 11px;
+            color: var(--muted-dark);
+
+            font-size: 10px;
         }
 
-        /* =========================================
-           PANELS
-        ========================================= */
+        .kpi-critical {
+            color: var(--critical);
+        }
+
+        .kpi-high {
+            color: var(--high);
+        }
+
+        .kpi-medium {
+            color: var(--medium);
+        }
+
+        .kpi-low {
+            color: var(--low);
+        }
+
+        .kpi-repos {
+            color: var(--cyan);
+        }
+
+        .kpi-members {
+            color: var(--purple);
+        }
+
+        .kpi-access {
+            color: #f43f5e;
+        }
+
+        /* =====================================================
+           POSTURE
+        ===================================================== */
+
+        .posture {
+            display: grid;
+
+            grid-template-columns: 1.25fr 1fr;
+
+            gap: 18px;
+
+            margin-bottom: 22px;
+        }
 
         .panel {
-            background: var(--panel);
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(15, 23, 42, 0.98),
+                    rgba(11, 17, 32, 0.98)
+                );
 
             border: 1px solid var(--border);
-            border-radius: 10px;
 
-            overflow: hidden;
+            border-radius: 15px;
 
-            margin-bottom: 20px;
+            padding: 21px;
+
+            box-shadow:
+                0 10px 30px rgba(0, 0, 0, 0.12);
         }
 
         .panel-header {
-            padding: 17px 20px;
-
-            border-bottom: 1px solid var(--border);
-
             display: flex;
+
             justify-content: space-between;
             align-items: center;
+
+            margin-bottom: 17px;
         }
 
         .panel-title {
             margin: 0;
 
             font-size: 15px;
-            font-weight: 650;
+            font-weight: 800;
+
+            color: var(--text);
         }
 
-        .panel-description {
-            margin: 4px 0 0;
+        .panel-subtitle {
+            color: var(--muted-dark);
 
-            color: var(--muted);
             font-size: 11px;
         }
 
-        .panel-body {
-            padding: 20px;
+        .posture-content {
+            display: flex;
+
+            align-items: center;
+
+            gap: 28px;
         }
 
-        /* =========================================
-           CHART GRID
-        ========================================= */
+        .posture-ring {
+            position: relative;
 
-        .chart-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            width: 145px;
+            height: 145px;
 
-            margin-bottom: 20px;
+            flex-shrink: 0;
         }
 
-        .chart-panel {
-            min-height: 360px;
+        .posture-ring canvas {
+            width: 145px !important;
+            height: 145px !important;
         }
 
-        .chart-container {
-            padding: 20px;
-            min-height: 300px;
+        .posture-center {
+            position: absolute;
+
+            inset: 0;
 
             display: flex;
+
+            flex-direction: column;
+
             align-items: center;
             justify-content: center;
+
+            pointer-events: none;
         }
 
-        canvas {
-            width: 100% !important;
-            height: 280px !important;
+        .posture-score {
+            font-size: 28px;
+            font-weight: 850;
         }
 
-        /* =========================================
-           CHART LEGEND
-        ========================================= */
-
-        .chart-legend {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 15px;
-
-            margin-top: 5px;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-
+        .posture-label {
             color: var(--muted);
-            font-size: 11px;
-        }
-
-        .legend-dot {
-            width: 9px;
-            height: 9px;
-            border-radius: 50%;
-        }
-
-        /* =========================================
-           REPOSITORY OVERVIEW
-        ========================================= */
-
-        .repo-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-        }
-
-        .repo-card {
-            padding: 15px;
-
-            background: var(--panel-light);
-
-            border: 1px solid var(--border);
-            border-radius: 8px;
-        }
-
-        .repo-name {
-            margin-bottom: 10px;
-
-            color: white;
-
-            font-size: 12px;
-            font-weight: 650;
-
-            word-break: break-word;
-        }
-
-        .repo-risk {
-            display: inline-block;
-
-            padding: 5px 8px;
-
-            border-radius: 4px;
-
-            background: #422006;
-            color: #fbbf24;
 
             font-size: 10px;
             font-weight: 700;
         }
 
-        /* =========================================
-           TABLE
-        ========================================= */
+        .posture-details {
+            flex: 1;
+        }
+
+        .posture-status {
+            display: inline-flex;
+
+            padding: 6px 10px;
+
+            border-radius: 7px;
+
+            font-size: 11px;
+            font-weight: 800;
+
+            margin-bottom: 11px;
+        }
+
+        .status-low {
+            color: #86efac;
+            background: rgba(34, 197, 94, 0.10);
+            border: 1px solid rgba(34, 197, 94, 0.15);
+        }
+
+        .status-medium {
+            color: #fde68a;
+            background: rgba(234, 179, 8, 0.10);
+            border: 1px solid rgba(234, 179, 8, 0.15);
+        }
+
+        .status-high {
+            color: #fdba74;
+            background: rgba(249, 115, 22, 0.10);
+            border: 1px solid rgba(249, 115, 22, 0.15);
+        }
+
+        .status-critical {
+            color: #fca5a5;
+            background: rgba(239, 68, 68, 0.10);
+            border: 1px solid rgba(239, 68, 68, 0.15);
+        }
+
+        .posture-description {
+            color: var(--text-secondary);
+
+            font-size: 13px;
+
+            line-height: 1.65;
+        }
+
+        .posture-stats {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 9px;
+
+            margin-top: 14px;
+        }
+
+        .mini-stat {
+            padding: 10px;
+
+            background: rgba(15, 23, 42, 0.75);
+
+            border: 1px solid var(--border);
+
+            border-radius: 9px;
+        }
+
+        .mini-stat-label {
+            color: var(--muted-dark);
+
+            font-size: 9px;
+
+            text-transform: uppercase;
+            font-weight: 800;
+        }
+
+        .mini-stat-value {
+            margin-top: 4px;
+
+            color: var(--text);
+
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        /* =====================================================
+           CHARTS
+        ===================================================== */
+
+        .chart-grid {
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 18px;
+
+            margin-bottom: 22px;
+        }
+
+        .chart-container {
+            position: relative;
+
+            height: 270px;
+        }
+
+        /* =====================================================
+           REPOSITORY RISK
+        ===================================================== */
+
+        .repository-list {
+            display: grid;
+
+            gap: 9px;
+        }
+
+        .repo-row {
+            display: grid;
+
+            grid-template-columns:
+                240px
+                1fr
+                90px
+                85px;
+
+            align-items: center;
+
+            gap: 15px;
+
+            padding: 13px 14px;
+
+            background:
+                rgba(15, 23, 42, 0.72);
+
+            border: 1px solid var(--border);
+
+            border-radius: 10px;
+
+            transition:
+                background 0.2s ease;
+        }
+
+        .repo-row:hover {
+            background: var(--panel-hover);
+        }
+
+        .repo-name {
+            font-weight: 750;
+
+            font-size: 13px;
+        }
+
+        .repo-meta {
+            margin-top: 3px;
+
+            color: var(--muted-dark);
+
+            font-size: 10px;
+        }
+
+        .risk-bar {
+            height: 8px;
+
+            background: #1e293b;
+
+            border-radius: 999px;
+
+            overflow: hidden;
+        }
+
+        .risk-fill {
+            height: 100%;
+
+            border-radius: 999px;
+
+            transition: width 0.5s ease;
+        }
+
+        .risk-number {
+            text-align: right;
+
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .risk-badge {
+            text-align: center;
+
+            padding: 5px 7px;
+
+            border-radius: 6px;
+
+            font-size: 9px;
+            font-weight: 850;
+        }
+
+        .risk-critical {
+            color: #fca5a5;
+            background: rgba(239, 68, 68, 0.12);
+        }
+
+        .risk-high {
+            color: #fdba74;
+            background: rgba(249, 115, 22, 0.12);
+        }
+
+        .risk-medium {
+            color: #fde68a;
+            background: rgba(234, 179, 8, 0.12);
+        }
+
+        .risk-low {
+            color: #7dd3fc;
+            background: rgba(56, 189, 248, 0.12);
+        }
+
+        /* =====================================================
+           ACCESS REVIEW
+        ===================================================== */
+
+        .access-panel {
+            margin-top: 22px;
+        }
+
+        .attention-banner {
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            padding: 13px 15px;
+
+            margin-bottom: 15px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    rgba(244, 63, 94, 0.08),
+                    rgba(244, 63, 94, 0.025)
+                );
+
+            border: 1px solid rgba(244, 63, 94, 0.15);
+
+            border-radius: 10px;
+        }
+
+        .attention-icon {
+            width: 32px;
+            height: 32px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 8px;
+
+            background: rgba(244, 63, 94, 0.12);
+
+            color: #fb7185;
+        }
+
+        .attention-text strong {
+            display: block;
+
+            color: #fda4af;
+
+            font-size: 12px;
+        }
+
+        .attention-text span {
+            display: block;
+
+            margin-top: 3px;
+
+            color: var(--muted);
+
+            font-size: 11px;
+        }
+
+        .access-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 10px;
+        }
+
+        .access-card {
+            padding: 14px;
+
+            background:
+                rgba(15, 23, 42, 0.75);
+
+            border: 1px solid var(--border);
+
+            border-radius: 10px;
+        }
+
+        .access-top {
+            display: flex;
+
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 10px;
+        }
+
+        .member-name {
+            font-weight: 800;
+
+            font-size: 13px;
+        }
+
+        .review-badge {
+            padding: 4px 7px;
+
+            border-radius: 5px;
+
+            color: #fda4af;
+
+            background: rgba(244, 63, 94, 0.10);
+
+            font-size: 8px;
+            font-weight: 850;
+        }
+
+        .access-details {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 8px;
+        }
+
+        .access-detail {
+            padding: 7px;
+
+            background: rgba(7, 11, 20, 0.45);
+
+            border-radius: 6px;
+        }
+
+        .access-detail-label {
+            color: var(--muted-dark);
+
+            font-size: 8px;
+
+            text-transform: uppercase;
+            font-weight: 800;
+        }
+
+        .access-detail-value {
+            margin-top: 3px;
+
+            color: var(--text-secondary);
+
+            font-size: 10px;
+            font-weight: 750;
+        }
+
+        .access-reason {
+            margin-top: 10px;
+
+            padding-top: 9px;
+
+            border-top: 1px solid var(--border);
+
+            color: var(--muted);
+
+            font-size: 10px;
+
+            line-height: 1.5;
+        }
+
+        /* =====================================================
+           FINDINGS
+        ===================================================== */
+
+        .findings-panel {
+            margin-top: 22px;
+        }
+
+        .filter-row {
+            display: flex;
+
+            gap: 8px;
+
+            margin-bottom: 15px;
+        }
+
+        .filter-row input,
+        .filter-row select {
+            padding: 9px 11px;
+
+            color: var(--text);
+
+            background: #0b1120;
+
+            border: 1px solid var(--border);
+
+            border-radius: 8px;
+
+            outline: none;
+
+            font-size: 11px;
+        }
+
+        .filter-row input {
+            flex: 1;
+        }
+
+        .filter-row input:focus,
+        .filter-row select:focus {
+            border-color: #4f46e5;
+        }
 
         .table-wrapper {
             overflow-x: auto;
@@ -395,191 +893,345 @@
 
         table {
             width: 100%;
+
             border-collapse: collapse;
+
             min-width: 900px;
         }
 
         th {
-            padding: 13px 15px;
+            padding: 11px;
 
-            background: #0f172a;
-
-            color: #94a3b8;
+            color: var(--muted-dark);
 
             text-align: left;
 
-            font-size: 10px;
-            font-weight: 700;
+            font-size: 9px;
 
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.07em;
 
             border-bottom: 1px solid var(--border);
         }
 
         td {
-            padding: 15px;
+            padding: 13px 11px;
 
-            color: #cbd5e1;
+            color: var(--text-secondary);
 
-            font-size: 12px;
+            border-bottom: 1px solid var(--border);
+
+            font-size: 11px;
 
             vertical-align: top;
-
-            border-bottom: 1px solid #1e293b;
-        }
-
-        tr:last-child td {
-            border-bottom: none;
         }
 
         tbody tr:hover {
-            background: #151f32;
+            background: rgba(15, 23, 42, 0.65);
         }
 
-        .repository {
-            color: white;
-            font-weight: 600;
+        .severity-text {
+            font-weight: 850;
         }
 
-        .severity-badge {
-            display: inline-block;
-
-            min-width: 62px;
-
-            padding: 5px 8px;
-
-            border-radius: 4px;
-
-            text-align: center;
-
-            font-size: 10px;
-            font-weight: 700;
+        .severity-critical {
+            color: var(--critical);
         }
 
-        .badge-critical {
-            background: #450a0a;
-            color: #fca5a5;
+        .severity-high {
+            color: var(--high);
         }
 
-        .badge-high {
-            background: #431407;
-            color: #fdba74;
+        .severity-medium {
+            color: var(--medium);
         }
 
-        .badge-medium {
-            background: #451a03;
-            color: #fcd34d;
+        .severity-low {
+            color: var(--low);
         }
 
-        .badge-low {
-            background: #172554;
-            color: #93c5fd;
+        .finding-title {
+            color: var(--text);
+
+            font-weight: 750;
         }
 
         .finding-description {
-            max-width: 280px;
+            max-width: 350px;
+
+            color: var(--muted);
+
             line-height: 1.5;
         }
 
         .recommendation {
             max-width: 330px;
-            color: #94a3b8;
-            line-height: 1.5;
+
+            color: var(--muted);
         }
 
-        /* =========================================
-           FOOTER
-        ========================================= */
+        /* =====================================================
+           CONTRIBUTION TABLE
+        ===================================================== */
 
-        footer {
-            padding: 25px 0 0;
+        .contribution-panel {
+            margin-top: 22px;
+        }
 
-            color: #64748b;
+        .contribution-table {
+            width: 100%;
+
+            border-collapse: collapse;
+        }
+
+        .score {
+            font-weight: 850;
+        }
+
+        .score-bar-wrapper {
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+        }
+
+        .score-bar {
+            width: 90px;
+            height: 6px;
+
+            background: #1e293b;
+
+            border-radius: 999px;
+
+            overflow: hidden;
+        }
+
+        .score-fill {
+            height: 100%;
+
+            background: #6366f1;
+
+            border-radius: 999px;
+        }
+
+        .level {
+            display: inline-block;
+
+            padding: 4px 7px;
+
+            border-radius: 5px;
+
+            font-size: 8px;
+            font-weight: 850;
+        }
+
+        .level-high {
+            color: #86efac;
+            background: rgba(34, 197, 94, 0.10);
+        }
+
+        .level-medium {
+            color: #fde68a;
+            background: rgba(234, 179, 8, 0.10);
+        }
+
+        .level-low {
+            color: #fdba74;
+            background: rgba(249, 115, 22, 0.10);
+        }
+
+        .level-none {
+            color: #94a3b8;
+            background: rgba(100, 116, 139, 0.10);
+        }
+
+        /* =====================================================
+           EMPTY / ERROR
+        ===================================================== */
+
+        .empty {
+            padding: 25px;
 
             text-align: center;
+
+            color: var(--muted-dark);
+
+            font-size: 12px;
+        }
+
+        .error {
+            padding: 13px;
+
+            color: #fca5a5;
+
+            background: rgba(127, 29, 29, 0.20);
+
+            border: 1px solid rgba(127, 29, 29, 0.40);
+
+            border-radius: 8px;
 
             font-size: 11px;
         }
 
-        /* =========================================
-           RESPONSIVE
-        ========================================= */
+        /* =====================================================
+           FOOTER
+        ===================================================== */
 
-        @media (max-width: 1100px) {
+        .footer {
+            display: flex;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            margin-top: 25px;
+
+            padding: 13px 3px 30px;
+
+            color: var(--muted-dark);
+
+            font-size: 10px;
+        }
+
+        .footer strong {
+            color: var(--muted);
+        }
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 1250px) {
 
             .kpi-grid {
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns:
+                    repeat(4, 1fr);
             }
 
-            .repo-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
+        }
 
+        @media (max-width: 1000px) {
+
+            .posture,
             .chart-grid {
                 grid-template-columns: 1fr;
             }
-        }
 
-        @media (max-width: 800px) {
-
-            .topbar {
-                padding: 20px;
+            .repo-row {
+                grid-template-columns:
+                    1fr
+                    1fr;
             }
 
-            .topbar-content {
+            .access-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+        @media (max-width: 700px) {
+
+            .container {
+                padding: 14px;
+            }
+
+            .header {
+                flex-direction: column;
+
                 align-items: flex-start;
+
+                gap: 18px;
+            }
+
+            .header-right {
+                width: 100%;
+
+                justify-content: space-between;
+            }
+
+            .kpi-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .posture-content {
+                flex-direction: column;
+
+                align-items: flex-start;
+            }
+
+            .posture-ring {
+                align-self: center;
+            }
+
+            .nav {
+                width: 100%;
+
+                overflow-x: auto;
+            }
+
+            .access-details {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .footer {
                 flex-direction: column;
             }
 
-            .container {
-                padding: 25px 15px 40px;
-            }
-
-            .kpi-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 500px) {
-
-            .kpi-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .repo-grid {
-                grid-template-columns: 1fr;
-            }
         }
     </style>
 </head>
 
 <body>
 
-    <!-- =========================================
+<div class="container">
+
+    <!-- =====================================================
          HEADER
-    ========================================== -->
+    ====================================================== -->
 
-    <header class="topbar">
+    <header class="header">
 
-        <div class="topbar-content">
+        <div class="brand">
 
-            <div class="brand">
+            <div class="brand-icon">
+                🛡
+            </div>
 
-                <div class="brand-icon">
-                    🛡
-                </div>
+            <div>
 
-                <div>
-                    <h1>GitHub Security Operations</h1>
-                    <p>Security & Access Assessment Dashboard</p>
-                </div>
+                <h1>
+                    GitHub Security & Access Hygiene
+                </h1>
+
+                <p>
+                    Organization Security Operations —
+                    <strong>manikanta-security-lab</strong>
+                </p>
 
             </div>
 
+        </div>
+
+        <div class="header-right">
+
             <div class="scan-status">
+
                 <span class="status-dot"></span>
-                Report Loaded
+
+                <span id="scanStatus">
+                    SCAN COMPLETED
+                </span>
+
+            </div>
+
+            <div
+                class="scan-time"
+                id="scanTime"
+            >
+                Live assessment
             </div>
 
         </div>
@@ -587,982 +1239,2411 @@
     </header>
 
 
-    <main class="container">
+    <!-- =====================================================
+         NAVIGATION
+    ====================================================== -->
 
-        <!-- =====================================
-             PAGE HEADING
-        ====================================== -->
+    <nav class="nav">
 
-        <div class="page-heading">
+        <button
+            class="active"
+            onclick="showSection('overview', this)"
+        >
+            Overview
+        </button>
 
-            <h2>Security Assessment Overview</h2>
+        <button
+            onclick="showSection('repositories', this)"
+        >
+            Repositories
+        </button>
 
-            <p>
-                Centralized view of repository exposure,
-                access control and security findings.
-            </p>
+        <button
+            onclick="showSection('access', this)"
+        >
+            Access & Contributions
+        </button>
+
+        <button
+            onclick="showSection('findings', this)"
+        >
+            Security Findings
+        </button>
+
+    </nav>
+
+
+    <!-- =====================================================
+         KPI CARDS
+    ====================================================== -->
+
+    <section
+        id="overview"
+        class="kpi-grid"
+    >
+
+        <div class="kpi kpi-critical">
+
+            <div class="kpi-label">
+                Critical
+            </div>
+
+            <div
+                class="kpi-value"
+                id="criticalCount"
+            >
+                0
+            </div>
+
+            <div class="kpi-meta">
+                Immediate attention
+            </div>
 
         </div>
 
 
-        <!-- =====================================
-             STATUS
-        ====================================== -->
+        <div class="kpi kpi-high">
 
-        <div class="status-message" id="status">
-            Loading security assessment...
+            <div class="kpi-label">
+                High
+            </div>
+
+            <div
+                class="kpi-value"
+                id="highCount"
+            >
+                0
+            </div>
+
+            <div class="kpi-meta">
+                Priority findings
+            </div>
+
         </div>
 
 
-        <!-- =====================================
-             KPI CARDS
-        ====================================== -->
+        <div class="kpi kpi-medium">
 
-        <section class="kpi-grid">
-
-            <div class="kpi-card kpi-total">
-                <div class="kpi-label">Total Findings</div>
-                <div class="kpi-value" id="totalCount">0</div>
-                <div class="kpi-subtitle">
-                    Security observations
-                </div>
+            <div class="kpi-label">
+                Medium
             </div>
 
-            <div class="kpi-card kpi-critical">
-                <div class="kpi-label">Critical</div>
-                <div class="kpi-value" id="criticalCount">0</div>
-                <div class="kpi-subtitle">
-                    Immediate attention
-                </div>
+            <div
+                class="kpi-value"
+                id="mediumCount"
+            >
+                0
             </div>
 
-            <div class="kpi-card kpi-high">
-                <div class="kpi-label">High</div>
-                <div class="kpi-value" id="highCount">0</div>
-                <div class="kpi-subtitle">
-                    High-priority findings
-                </div>
+            <div class="kpi-meta">
+                Review required
             </div>
 
-            <div class="kpi-card kpi-medium">
-                <div class="kpi-label">Medium</div>
-                <div class="kpi-value" id="mediumCount">0</div>
-                <div class="kpi-subtitle">
-                    Review recommended
-                </div>
+        </div>
+
+
+        <div class="kpi kpi-low">
+
+            <div class="kpi-label">
+                Low
             </div>
 
-            <div class="kpi-card kpi-low">
-                <div class="kpi-label">Low</div>
-                <div class="kpi-value" id="lowCount">0</div>
-                <div class="kpi-subtitle">
-                    Lifecycle / hygiene
-                </div>
+            <div
+                class="kpi-value"
+                id="lowCount"
+            >
+                0
             </div>
 
-        </section>
-
-
-        <!-- =====================================
-             CHARTS
-        ====================================== -->
-
-        <section class="chart-grid">
-
-            <!-- Severity Chart -->
-
-            <div class="panel chart-panel">
-
-                <div class="panel-header">
-
-                    <div>
-                        <div class="panel-title">
-                            Findings by Severity
-                        </div>
-
-                        <div class="panel-description">
-                            Distribution of security findings by severity
-                        </div>
-                    </div>
-
-                </div>
-
-                <div class="chart-container">
-
-                    <canvas id="severityChart"></canvas>
-
-                </div>
-
+            <div class="kpi-meta">
+                Monitor
             </div>
 
+        </div>
 
-            <!-- Finding Type Chart -->
 
-            <div class="panel chart-panel">
+        <div class="kpi kpi-repos">
 
-                <div class="panel-header">
-
-                    <div>
-                        <div class="panel-title">
-                            Findings by Type
-                        </div>
-
-                        <div class="panel-description">
-                            Security findings grouped by category
-                        </div>
-                    </div>
-
-                </div>
-
-                <div class="chart-container">
-
-                    <canvas id="typeChart"></canvas>
-
-                </div>
-
+            <div class="kpi-label">
+                Repositories
             </div>
 
-        </section>
+            <div
+                class="kpi-value"
+                id="repositoryCount"
+            >
+                0
+            </div>
+
+            <div class="kpi-meta">
+                Scanned
+            </div>
+
+        </div>
 
 
-        <!-- =====================================
-             REPOSITORY OVERVIEW
-        ====================================== -->
+        <div class="kpi kpi-members">
 
-        <section class="panel">
+            <div class="kpi-label">
+                Members
+            </div>
+
+            <div
+                class="kpi-value"
+                id="memberCount"
+            >
+                0
+            </div>
+
+            <div class="kpi-meta">
+                Access analyzed
+            </div>
+
+        </div>
+
+
+        <div class="kpi kpi-access">
+
+            <div class="kpi-label">
+                Access Reviews
+            </div>
+
+            <div
+                class="kpi-value"
+                id="accessCount"
+            >
+                0
+            </div>
+
+            <div class="kpi-meta">
+                Human review only
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         SECURITY POSTURE
+    ====================================================== -->
+
+    <section class="posture">
+
+        <div class="panel">
 
             <div class="panel-header">
 
-                <div>
-                    <div class="panel-title">
-                        Repository Security Overview
+                <h2 class="panel-title">
+                    Overall Security Posture
+                </h2>
+
+                <span class="panel-subtitle">
+                    Risk assessment
+                </span>
+
+            </div>
+
+            <div class="posture-content">
+
+                <div class="posture-ring">
+
+                    <canvas
+                        id="postureChart"
+                    ></canvas>
+
+                    <div class="posture-center">
+
+                        <div
+                            class="posture-score"
+                            id="postureScore"
+                        >
+                            0
+                        </div>
+
+                        <div class="posture-label">
+                            RISK SCORE
+                        </div>
+
                     </div>
 
-                    <div class="panel-description">
-                        Repositories represented in the current assessment
+                </div>
+
+
+                <div class="posture-details">
+
+                    <div
+                        id="postureStatus"
+                        class="posture-status status-low"
+                    >
+                        LOW RISK
                     </div>
+
+                    <div
+                        id="postureDescription"
+                        class="posture-description"
+                    >
+                        Loading security posture...
+                    </div>
+
+
+                    <div class="posture-stats">
+
+                        <div class="mini-stat">
+
+                            <div class="mini-stat-label">
+                                Findings
+                            </div>
+
+                            <div
+                                class="mini-stat-value"
+                                id="postureFindings"
+                            >
+                                0
+                            </div>
+
+                        </div>
+
+
+                        <div class="mini-stat">
+
+                            <div class="mini-stat-label">
+                                High Priority
+                            </div>
+
+                            <div
+                                class="mini-stat-value"
+                                id="postureHigh"
+                            >
+                                0
+                            </div>
+
+                        </div>
+
+
+                        <div class="mini-stat">
+
+                            <div class="mini-stat-label">
+                                Access Reviews
+                            </div>
+
+                            <div
+                                class="mini-stat-value"
+                                id="postureAccess"
+                            >
+                                0
+                            </div>
+
+                        </div>
+
+
+                        <div class="mini-stat">
+
+                            <div class="mini-stat-label">
+                                Repositories
+                            </div>
+
+                            <div
+                                class="mini-stat-value"
+                                id="postureRepos"
+                            >
+                                0
+                            </div>
+
+                        </div>
+
+                    </div>
+
                 </div>
 
             </div>
 
-            <div class="panel-body">
-
-                <div class="repo-grid" id="repositoryGrid">
-                    Loading...
-                </div>
-
-            </div>
-
-        </section>
+        </div>
 
 
-        <!-- =====================================
-             DETAILED FINDINGS
-        ====================================== -->
-
-        <section class="panel">
+        <div class="panel">
 
             <div class="panel-header">
 
-                <div>
-                    <div class="panel-title">
-                        Security Findings
+                <h2 class="panel-title">
+                    Assessment Summary
+                </h2>
+
+                <span class="panel-subtitle">
+                    Executive view
+                </span>
+
+            </div>
+
+
+            <div
+                class="posture-description"
+                id="executiveSummary"
+            >
+                Loading assessment...
+            </div>
+
+
+            <div class="posture-stats">
+
+                <div class="mini-stat">
+
+                    <div class="mini-stat-label">
+                        Scanner
                     </div>
 
-                    <div class="panel-description">
-                        Detailed findings and recommended remediation actions
+                    <div class="mini-stat-value">
+                        GitHub API
                     </div>
+
+                </div>
+
+
+                <div class="mini-stat">
+
+                    <div class="mini-stat-label">
+                        Lookback
+                    </div>
+
+                    <div class="mini-stat-value">
+                        12 months
+                    </div>
+
+                </div>
+
+
+                <div class="mini-stat">
+
+                    <div class="mini-stat-label">
+                        Removal
+                    </div>
+
+                    <div class="mini-stat-value">
+                        Manual
+                    </div>
+
+                </div>
+
+
+                <div class="mini-stat">
+
+                    <div class="mini-stat-label">
+                        Admin Protection
+                    </div>
+
+                    <div class="mini-stat-value">
+                        Enabled
+                    </div>
+
                 </div>
 
             </div>
 
-            <div class="table-wrapper">
+        </div>
 
-                <table>
+    </section>
 
-                    <thead>
 
-                        <tr>
-                            <th>Repository</th>
-                            <th>Finding</th>
-                            <th>Severity</th>
-                            <th>Description</th>
-                            <th>Recommendation</th>
-                        </tr>
+    <!-- =====================================================
+         CHARTS
+    ====================================================== -->
 
-                    </thead>
+    <section class="chart-grid">
 
-                    <tbody id="findingsTable">
+        <div class="panel">
 
-                        <tr>
-                            <td colspan="5">
-                                Loading...
-                            </td>
-                        </tr>
+            <div class="panel-header">
 
-                    </tbody>
+                <h2 class="panel-title">
+                    Severity Distribution
+                </h2>
 
-                </table>
+                <span class="panel-subtitle">
+                    Security findings
+                </span>
 
             </div>
 
-        </section>
+            <div class="chart-container">
+
+                <canvas
+                    id="severityChart"
+                ></canvas>
+
+            </div>
+
+        </div>
 
 
-        <footer>
-            GitHub Security & Access Automation
-            • Security Assessment Dashboard
-        </footer>
+        <div class="panel">
 
-    </main>
+            <div class="panel-header">
+
+                <h2 class="panel-title">
+                    Findings by Type
+                </h2>
+
+                <span class="panel-subtitle">
+                    Detection categories
+                </span>
+
+            </div>
+
+            <div class="chart-container">
+
+                <canvas
+                    id="typeChart"
+                ></canvas>
+
+            </div>
+
+        </div>
+
+    </section>
 
 
-    <!-- =========================================
-         CHART.JS
-    ========================================== -->
+    <!-- =====================================================
+         REPOSITORY RISK
+    ====================================================== -->
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <section
+        id="repositories"
+        class="panel"
+    >
+
+        <div class="panel-header">
+
+            <h2 class="panel-title">
+                Repository Risk Overview
+            </h2>
+
+            <span
+                class="panel-subtitle"
+                id="repoSummary"
+            >
+                Loading...
+            </span>
+
+        </div>
 
 
-    <script>
+        <div
+            id="repositoryRisk"
+            class="repository-list"
+        >
 
-        let severityChart = null;
-        let typeChart = null;
+            <div class="empty">
+                Loading repository risk...
+            </div>
+
+        </div>
+
+    </section>
 
 
-        // =========================================
-        // Load security report
-        // =========================================
+    <!-- =====================================================
+         ACCESS REVIEW
+    ====================================================== -->
 
-        async function loadSecurityReport() {
+    <section
+        id="access"
+        class="panel access-panel"
+    >
 
-            const status =
-                document.getElementById("status");
+        <div class="panel-header">
 
-            try {
+            <h2 class="panel-title">
+                Access Review Required
+            </h2>
 
-                const response =
-                    await fetch(
-                        "../reports/security-report.json"
-                    );
+            <span class="panel-subtitle">
+                Contribution-based recommendations
+            </span>
 
-                if (!response.ok) {
+        </div>
 
-                    throw new Error(
-                        "Unable to load security-report.json"
-                    );
 
-                }
+        <div class="attention-banner">
 
-                const findings =
-                    await response.json();
+            <div class="attention-icon">
+                ⚠
+            </div>
 
-                renderDashboard(findings);
+            <div class="attention-text">
 
-                status.textContent =
-                    "Security report loaded successfully.";
+                <strong>
+                    Human review required — no access is removed automatically.
+                </strong>
 
-            }
-            catch (error) {
+                <span>
+                    Repository administrators are excluded from removal
+                    recommendations. Recommendations are based on contribution
+                    score and observed activity.
+                </span>
 
-                status.textContent =
-                    "Unable to load the security report. " +
-                    "Make sure the dashboard is running through a local web server.";
+            </div>
 
-                console.error(error);
+        </div>
 
-            }
+
+        <div
+            id="accessReviews"
+            class="access-grid"
+        >
+
+            <div class="empty">
+                Loading access recommendations...
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         CONTRIBUTION ANALYSIS
+    ====================================================== -->
+
+    <section class="panel contribution-panel">
+
+        <div class="panel-header">
+
+            <h2 class="panel-title">
+                Contribution Analysis
+            </h2>
+
+            <span class="panel-subtitle">
+                Weighted activity score
+            </span>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Member
+                        </th>
+
+                        <th>
+                            Repository
+                        </th>
+
+                        <th>
+                            Permission
+                        </th>
+
+                        <th>
+                            Commits
+                        </th>
+
+                        <th>
+                            PRs Opened
+                        </th>
+
+                        <th>
+                            PRs Merged
+                        </th>
+
+                        <th>
+                            Reviews
+                        </th>
+
+                        <th>
+                            Score
+                        </th>
+
+                        <th>
+                            Level
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="contributionTable">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         SECURITY FINDINGS
+    ====================================================== -->
+
+    <section
+        id="findings"
+        class="panel findings-panel"
+    >
+
+        <div class="panel-header">
+
+            <h2 class="panel-title">
+                Security Findings
+            </h2>
+
+            <span
+                class="panel-subtitle"
+                id="findingSummary"
+            >
+                Loading...
+            </span>
+
+        </div>
+
+
+        <div class="filter-row">
+
+            <input
+                type="text"
+                id="findingSearch"
+                placeholder="Search repository, finding, description..."
+                oninput="renderFindingsTable()"
+            >
+
+
+            <select
+                id="severityFilter"
+                onchange="renderFindingsTable()"
+            >
+
+                <option value="all">
+                    All Severities
+                </option>
+
+                <option value="critical">
+                    Critical
+                </option>
+
+                <option value="high">
+                    High
+                </option>
+
+                <option value="medium">
+                    Medium
+                </option>
+
+                <option value="low">
+                    Low
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Severity
+                        </th>
+
+                        <th>
+                            Repository
+                        </th>
+
+                        <th>
+                            Finding
+                        </th>
+
+                        <th>
+                            Description
+                        </th>
+
+                        <th>
+                            Recommendation
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody
+                    id="findingsTable"
+                ></tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer class="footer">
+
+        <span>
+            GitHub Security & Access Hygiene Automation
+        </span>
+
+        <span>
+            Data source:
+            <strong>
+                GitHub API → JSON reports → Dashboard
+            </strong>
+        </span>
+
+    </footer>
+
+</div>
+
+
+<script>
+
+/* ==========================================================
+   GLOBAL DATA
+========================================================== */
+
+let findings = [];
+let repositories = [];
+let members = [];
+let contributions = [];
+let accessRecommendations = [];
+let advisories = [];
+
+let severityChartInstance = null;
+let typeChartInstance = null;
+let postureChartInstance = null;
+
+
+/* ==========================================================
+   FILE LOADER
+========================================================== */
+
+async function loadJson(path, fallback = []) {
+
+    try {
+
+        const response = await fetch(path);
+
+        if (!response.ok) {
+            throw new Error(
+                `${path} returned HTTP ${response.status}`
+            );
+        }
+
+        return await response.json();
+
+    }
+    catch (error) {
+
+        console.warn(
+            "Unable to load:",
+            path,
+            error.message
+        );
+
+        return fallback;
+
+    }
+
+}
+
+
+/* ==========================================================
+   LOAD ALL DATA
+========================================================== */
+
+async function loadDashboardData() {
+
+    findings = await loadJson(
+        "../reports/security-report.json",
+        []
+    );
+
+    if (
+        !Array.isArray(findings) &&
+        Array.isArray(findings.findings)
+    ) {
+        findings = findings.findings;
+    }
+
+    repositories = await loadJson(
+        "../data/repositories.json",
+        []
+    );
+
+    members = await loadJson(
+        "../data/members.json",
+        []
+    );
+
+    contributions = await loadJson(
+        "../data/contributions.json",
+        []
+    );
+
+    accessRecommendations = await loadJson(
+        "../data/access-recommendations.json",
+        []
+    );
+
+    advisories = await loadJson(
+        "../data/advisories.json",
+        []
+    );
+
+    renderDashboard();
+
+}
+
+
+/* ==========================================================
+   HELPERS
+========================================================== */
+
+function getSeverity(finding) {
+
+    return String(
+        finding.Severity ||
+        finding.severity ||
+        "unknown"
+    ).toLowerCase();
+
+}
+
+
+function getFindingType(finding) {
+
+    return (
+        finding.FindingType ||
+        finding.Type ||
+        finding.findingType ||
+        finding.type ||
+        "Security Finding"
+    );
+
+}
+
+
+function getRepository(finding) {
+
+    return (
+        finding.Repository ||
+        finding.repository ||
+        "Unknown"
+    );
+
+}
+
+
+function getDescription(finding) {
+
+    return (
+        finding.Description ||
+        finding.description ||
+        "-"
+    );
+
+}
+
+
+function getRecommendation(finding) {
+
+    return (
+        finding.Recommendation ||
+        finding.recommendation ||
+        "-"
+    );
+
+}
+
+
+function escapeHtml(value) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent =
+        String(value ?? "");
+
+    return div.innerHTML;
+
+}
+
+
+/* ==========================================================
+   UNIQUE MEMBERS
+========================================================== */
+
+function getUniqueMembers() {
+
+    return [
+        ...new Set(
+            members.map(
+                member => member.Login || member.login
+            )
+        )
+    ];
+
+}
+
+
+/* ==========================================================
+   SEVERITY COUNTS
+========================================================== */
+
+function getSeverityCounts() {
+
+    const counts = {
+
+        critical: 0,
+        high: 0,
+        medium: 0,
+        low: 0
+
+    };
+
+    findings.forEach(finding => {
+
+        const severity =
+            getSeverity(finding);
+
+        if (
+            Object.prototype.hasOwnProperty.call(
+                counts,
+                severity
+            )
+        ) {
+
+            counts[severity]++;
 
         }
 
+    });
 
-        // =========================================
-        // Render dashboard
-        // =========================================
+    return counts;
 
-        function renderDashboard(findings) {
+}
 
-            const severityCounts = {
 
-                Critical: 0,
-                High: 0,
-                Medium: 0,
-                Low: 0
+/* ==========================================================
+   KPI SUMMARY
+========================================================== */
+
+function renderKPIs() {
+
+    const counts =
+        getSeverityCounts();
+
+    document.getElementById(
+        "criticalCount"
+    ).textContent =
+        counts.critical;
+
+    document.getElementById(
+        "highCount"
+    ).textContent =
+        counts.high;
+
+    document.getElementById(
+        "mediumCount"
+    ).textContent =
+        counts.medium;
+
+    document.getElementById(
+        "lowCount"
+    ).textContent =
+        counts.low;
+
+    document.getElementById(
+        "repositoryCount"
+    ).textContent =
+        repositories.length;
+
+    document.getElementById(
+        "memberCount"
+    ).textContent =
+        getUniqueMembers().length;
+
+    document.getElementById(
+        "accessCount"
+    ).textContent =
+        accessRecommendations.length;
+
+}
+
+
+/* ==========================================================
+   POSTURE SCORE
+========================================================== */
+
+function calculateRiskScore() {
+
+    const counts =
+        getSeverityCounts();
+
+    const repoCount =
+        Math.max(repositories.length, 1);
+
+    let score = 0;
+
+    score += counts.critical * 30;
+    score += counts.high * 15;
+    score += counts.medium * 7;
+    score += counts.low * 2;
+
+    score += accessRecommendations.length * 5;
+
+    /*
+       Normalize so that a normal small demonstration
+       organization does not immediately reach 100.
+    */
+
+    score =
+        Math.min(
+            100,
+            Math.round(
+                score / repoCount
+            )
+        );
+
+    return score;
+
+}
+
+
+function getPosture(score) {
+
+    if (score >= 75) {
+
+        return {
+            label: "CRITICAL RISK",
+            className: "status-critical",
+            description:
+                "Critical security exposure or access hygiene issues require immediate security-lead attention."
+        };
+
+    }
+
+    if (score >= 50) {
+
+        return {
+            label: "HIGH RISK",
+            className: "status-high",
+            description:
+                "The organization has significant security findings or access-hygiene concerns that should be prioritized."
+        };
+
+    }
+
+    if (score >= 25) {
+
+        return {
+            label: "MODERATE RISK",
+            className: "status-medium",
+            description:
+                "The assessment identified issues requiring review, but the current exposure is not classified as critical."
+        };
+
+    }
+
+    return {
+        label: "LOW RISK",
+        className: "status-low",
+        description:
+            "No significant critical exposure was detected. Continue monitoring security findings and access hygiene."
+    };
+
+}
+
+
+/* ==========================================================
+   POSTURE RENDER
+========================================================== */
+
+function renderPosture() {
+
+    const score =
+        calculateRiskScore();
+
+    const posture =
+        getPosture(score);
+
+    const counts =
+        getSeverityCounts();
+
+    document.getElementById(
+        "postureScore"
+    ).textContent =
+        score;
+
+    const status =
+        document.getElementById(
+            "postureStatus"
+        );
+
+    status.className =
+        "posture-status " +
+        posture.className;
+
+    status.textContent =
+        posture.label;
+
+    document.getElementById(
+        "postureDescription"
+    ).textContent =
+        posture.description;
+
+    document.getElementById(
+        "postureFindings"
+    ).textContent =
+        findings.length;
+
+    document.getElementById(
+        "postureHigh"
+    ).textContent =
+        counts.critical +
+        counts.high;
+
+    document.getElementById(
+        "postureAccess"
+    ).textContent =
+        accessRecommendations.length;
+
+    document.getElementById(
+        "postureRepos"
+    ).textContent =
+        repositories.length;
+
+
+    const summary =
+        document.getElementById(
+            "executiveSummary"
+        );
+
+    summary.innerHTML = `
+        This assessment scanned
+        <strong>${repositories.length}</strong>
+        repositories and analyzed
+        <strong>${getUniqueMembers().length}</strong>
+        members using GitHub repository access,
+        activity, pull-request reviews and security
+        findings. The current assessment contains
+        <strong>${findings.length}</strong>
+        security findings and
+        <strong>${accessRecommendations.length}</strong>
+        access-review recommendation(s).
+        Access removal is intentionally
+        <strong>not automated</strong>.
+    `;
+
+
+    renderPostureChart(score);
+
+}
+
+
+/* ==========================================================
+   POSTURE CHART
+========================================================== */
+
+function renderPostureChart(score) {
+
+    const ctx =
+        document.getElementById(
+            "postureChart"
+        );
+
+    if (postureChartInstance) {
+
+        postureChartInstance.destroy();
+
+    }
+
+    postureChartInstance =
+        new Chart(
+            ctx,
+            {
+                type: "doughnut",
+
+                data: {
+
+                    labels: [
+                        "Risk",
+                        "Remaining"
+                    ],
+
+                    datasets: [{
+
+                        data: [
+                            score,
+                            100 - score
+                        ],
+
+                        backgroundColor: [
+                            "#6366f1",
+                            "#1e293b"
+                        ],
+
+                        borderWidth: 0
+
+                    }]
+
+                },
+
+                options: {
+
+                    responsive: true,
+                    maintainAspectRatio: false,
+
+                    cutout: "78%",
+
+                    plugins: {
+
+                        legend: {
+                            display: false
+                        },
+
+                        tooltip: {
+                            enabled: false
+                        }
+
+                    }
+
+                }
+
+            }
+        );
+
+}
+
+
+/* ==========================================================
+   SEVERITY CHART
+========================================================== */
+
+function renderSeverityChart() {
+
+    const counts =
+        getSeverityCounts();
+
+    const ctx =
+        document.getElementById(
+            "severityChart"
+        );
+
+    if (severityChartInstance) {
+
+        severityChartInstance.destroy();
+
+    }
+
+    severityChartInstance =
+        new Chart(
+            ctx,
+            {
+                type: "doughnut",
+
+                data: {
+
+                    labels: [
+                        "Critical",
+                        "High",
+                        "Medium",
+                        "Low"
+                    ],
+
+                    datasets: [{
+
+                        data: [
+                            counts.critical,
+                            counts.high,
+                            counts.medium,
+                            counts.low
+                        ],
+
+                        backgroundColor: [
+                            "#ef4444",
+                            "#f97316",
+                            "#eab308",
+                            "#38bdf8"
+                        ],
+
+                        borderColor: "#0f172a",
+                        borderWidth: 4
+
+                    }]
+
+                },
+
+                options: {
+
+                    responsive: true,
+                    maintainAspectRatio: false,
+
+                    cutout: "62%",
+
+                    plugins: {
+
+                        legend: {
+
+                            position: "bottom",
+
+                            labels: {
+
+                                color: "#cbd5e1",
+
+                                padding: 16,
+
+                                usePointStyle: true,
+
+                                font: {
+                                    size: 10
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+        );
+
+}
+
+
+/* ==========================================================
+   TYPE CHART
+========================================================== */
+
+function renderTypeChart() {
+
+    const typeCounts = {};
+
+    findings.forEach(finding => {
+
+        const type =
+            getFindingType(finding);
+
+        typeCounts[type] =
+            (typeCounts[type] || 0) + 1;
+
+    });
+
+    const labels =
+        Object.keys(typeCounts);
+
+    const values =
+        Object.values(typeCounts);
+
+    const ctx =
+        document.getElementById(
+            "typeChart"
+        );
+
+    if (typeChartInstance) {
+
+        typeChartInstance.destroy();
+
+    }
+
+    typeChartInstance =
+        new Chart(
+            ctx,
+            {
+                type: "bar",
+
+                data: {
+
+                    labels: labels,
+
+                    datasets: [{
+
+                        label: "Findings",
+
+                        data: values,
+
+                        backgroundColor:
+                            "#6366f1",
+
+                        borderRadius: 6,
+
+                        borderSkipped: false
+
+                    }]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    scales: {
+
+                        x: {
+
+                            ticks: {
+                                color: "#94a3b8",
+                                font: {
+                                    size: 9
+                                }
+                            },
+
+                            grid: {
+                                display: false
+                            }
+
+                        },
+
+                        y: {
+
+                            beginAtZero: true,
+
+                            ticks: {
+
+                                color: "#94a3b8",
+
+                                precision: 0,
+
+                                font: {
+                                    size: 9
+                                }
+
+                            },
+
+                            grid: {
+                                color: "#1e293b"
+                            }
+
+                        }
+
+                    },
+
+                    plugins: {
+
+                        legend: {
+                            display: false
+                        }
+
+                    }
+
+                }
+
+            }
+        );
+
+}
+
+
+/* ==========================================================
+   REPOSITORY RISK
+========================================================== */
+
+function renderRepositoryRisk() {
+
+    const container =
+        document.getElementById(
+            "repositoryRisk"
+        );
+
+    container.innerHTML = "";
+
+    if (repositories.length === 0) {
+
+        container.innerHTML =
+            `<div class="empty">
+                No repository data available.
+            </div>`;
+
+        return;
+
+    }
+
+
+    const repoMap = {};
+
+    repositories.forEach(repo => {
+
+        const name =
+            repo.Repository ||
+            repo.name ||
+            "Unknown";
+
+        repoMap[name] = {
+
+            total: 0,
+            critical: 0,
+            high: 0,
+            medium: 0,
+            low: 0,
+
+            archived:
+                Boolean(repo.Archived),
+
+            fork:
+                Boolean(repo.Fork),
+
+            empty:
+                Boolean(repo.Empty)
+
+        };
+
+    });
+
+
+    findings.forEach(finding => {
+
+        const repo =
+            getRepository(finding);
+
+        if (!repoMap[repo]) {
+
+            repoMap[repo] = {
+
+                total: 0,
+                critical: 0,
+                high: 0,
+                medium: 0,
+                low: 0,
+
+                archived: false,
+                fork: false,
+                empty: false
 
             };
 
+        }
 
-            findings.forEach(function (finding) {
+        repoMap[repo].total++;
 
-                if (
-                    Object.prototype.hasOwnProperty.call(
-                        severityCounts,
-                        finding.Severity
+        const severity =
+            getSeverity(finding);
+
+        if (
+            Object.prototype.hasOwnProperty.call(
+                repoMap[repo],
+                severity
+            )
+        ) {
+
+            repoMap[repo][severity]++;
+
+        }
+
+    });
+
+
+    const entries =
+        Object.entries(repoMap)
+            .sort(
+                (a, b) =>
+                    getRepositoryRiskScore(b[1]) -
+                    getRepositoryRiskScore(a[1])
+            );
+
+
+    const maxScore =
+        Math.max(
+            ...entries.map(
+                entry =>
+                    Math.max(
+                        getRepositoryRiskScore(
+                            entry[1]
+                        ),
+                        1
                     )
-                ) {
-
-                    severityCounts[
-                        finding.Severity
-                    ]++;
-
-                }
-
-            });
+            )
+        );
 
 
-            const total =
-                findings.length;
+    entries.forEach(entry => {
+
+        const repo =
+            entry[0];
+
+        const data =
+            entry[1];
+
+        const riskScore =
+            getRepositoryRiskScore(data);
+
+        let risk =
+            "LOW";
+
+        if (riskScore >= 50) {
+            risk = "CRITICAL";
+        }
+        else if (riskScore >= 30) {
+            risk = "HIGH";
+        }
+        else if (riskScore >= 15) {
+            risk = "MEDIUM";
+        }
+
+        const riskClass =
+            "risk-" +
+            risk.toLowerCase();
+
+        const width =
+            data.total === 0
+                ? 5
+                : Math.max(
+                    8,
+                    (
+                        riskScore /
+                        maxScore
+                    ) * 100
+                );
 
 
-            // KPI values
+        const flags = [];
 
-            document.getElementById(
-                "totalCount"
-            ).textContent = total;
+        if (data.archived) {
+            flags.push("Archived");
+        }
 
-            document.getElementById(
-                "criticalCount"
-            ).textContent =
-                severityCounts.Critical;
+        if (data.fork) {
+            flags.push("Fork");
+        }
 
-            document.getElementById(
-                "highCount"
-            ).textContent =
-                severityCounts.High;
-
-            document.getElementById(
-                "mediumCount"
-            ).textContent =
-                severityCounts.Medium;
-
-            document.getElementById(
-                "lowCount"
-            ).textContent =
-                severityCounts.Low;
-
-
-            // Render charts
-
-            renderSeverityChart(
-                severityCounts
-            );
-
-            renderTypeChart(
-                findings
-            );
-
-
-            // Repository overview
-
-            renderRepositories(
-                findings
-            );
-
-
-            // Detailed findings
-
-            renderFindingsTable(
-                findings
-            );
-
+        if (data.empty) {
+            flags.push("Empty");
         }
 
 
-        // =========================================
-        // Severity chart
-        // =========================================
+        const row =
+            document.createElement("div");
 
-        function renderSeverityChart(
-            severityCounts
-        ) {
+        row.className =
+            "repo-row";
 
-            const canvas =
-                document.getElementById(
-                    "severityChart"
-                );
+        row.innerHTML = `
 
-            if (severityChart) {
-                severityChart.destroy();
-            }
+            <div>
 
+                <div class="repo-name">
+                    ${escapeHtml(repo)}
+                </div>
 
-            severityChart =
-                new Chart(
-                    canvas,
-                    {
-
-                        type: "bar",
-
-                        data: {
-
-                            labels: [
-                                "Critical",
-                                "High",
-                                "Medium",
-                                "Low"
-                            ],
-
-                            datasets: [
-
-                                {
-                                    label: "Findings",
-
-                                    data: [
-                                        severityCounts.Critical,
-                                        severityCounts.High,
-                                        severityCounts.Medium,
-                                        severityCounts.Low
-                                    ],
-
-                                    backgroundColor: [
-                                        "#ef4444",
-                                        "#f97316",
-                                        "#f59e0b",
-                                        "#3b82f6"
-                                    ],
-
-                                    borderRadius: 6,
-
-                                    borderSkipped: false
-
-                                }
-
-                            ]
-
-                        },
-
-                        options: {
-
-                            responsive: true,
-
-                            maintainAspectRatio: false,
-
-                            plugins: {
-
-                                legend: {
-                                    display: false
-                                },
-
-                                tooltip: {
-
-                                    callbacks: {
-
-                                        label:
-                                            function(context) {
-
-                                                return (
-                                                    " Findings: " +
-                                                    context.raw
-                                                );
-
-                                            }
-
-                                    }
-
-                                }
-
-                            },
-
-                            scales: {
-
-                                x: {
-
-                                    ticks: {
-                                        color: "#94a3b8"
-                                    },
-
-                                    grid: {
-                                        display: false
-                                    }
-
-                                },
-
-                                y: {
-
-                                    beginAtZero: true,
-
-                                    ticks: {
-
-                                        color: "#94a3b8",
-
-                                        precision: 0
-
-                                    },
-
-                                    grid: {
-                                        color: "#263247"
-                                    }
-
-                                }
-
-                            }
-
-                        }
-
+                <div class="repo-meta">
+                    ${data.total} finding(s)
+                    ${
+                        flags.length
+                            ? " • " +
+                              flags.join(" • ")
+                            : ""
                     }
-                );
+                </div>
 
-        }
+            </div>
 
 
-        // =========================================
-        // Finding type chart
-        // =========================================
+            <div class="risk-bar">
 
-        function renderTypeChart(
-            findings
-        ) {
+                <div
+                    class="risk-fill"
+                    style="
+                        width:${width}%;
+                        background:${getRiskColor(risk)};
+                    "
+                ></div>
 
-            const typeCounts = {};
+            </div>
 
 
-            findings.forEach(function (finding) {
+            <div class="risk-number">
 
-                const type =
-                    finding.FindingType;
+                ${riskScore}
 
-                typeCounts[type] =
-                    (typeCounts[type] || 0) + 1;
+            </div>
 
-            });
 
+            <div
+                class="risk-badge ${riskClass}"
+            >
 
-            const labels =
-                Object.keys(typeCounts);
+                ${risk}
 
-            const values =
-                Object.values(typeCounts);
+            </div>
 
+        `;
 
-            const canvas =
-                document.getElementById(
-                    "typeChart"
-                );
+        container.appendChild(row);
 
+    });
 
-            if (typeChart) {
-                typeChart.destroy();
-            }
 
+    document.getElementById(
+        "repoSummary"
+    ).textContent =
+        `${entries.length} repositories assessed`;
 
-            typeChart =
-                new Chart(
-                    canvas,
-                    {
+}
 
-                        type: "bar",
 
-                        data: {
+function getRepositoryRiskScore(data) {
 
-                            labels: labels,
+    return (
+        data.critical * 30 +
+        data.high * 15 +
+        data.medium * 7 +
+        data.low * 2
+    );
 
-                            datasets: [
+}
 
-                                {
-                                    label: "Findings",
 
-                                    data: values,
+function getRiskColor(risk) {
 
-                                    backgroundColor: [
-                                        "#60a5fa",
-                                        "#f59e0b",
-                                        "#a78bfa",
-                                        "#22c55e"
-                                    ],
+    if (risk === "CRITICAL") {
+        return "#ef4444";
+    }
 
-                                    borderRadius: 6,
+    if (risk === "HIGH") {
+        return "#f97316";
+    }
 
-                                    borderSkipped: false
+    if (risk === "MEDIUM") {
+        return "#eab308";
+    }
 
-                                }
+    return "#38bdf8";
 
-                            ]
+}
 
-                        },
 
-                        options: {
+/* ==========================================================
+   ACCESS RECOMMENDATIONS
+========================================================== */
 
-                            indexAxis: "y",
+function renderAccessReviews() {
 
-                            responsive: true,
+    const container =
+        document.getElementById(
+            "accessReviews"
+        );
 
-                            maintainAspectRatio: false,
+    container.innerHTML = "";
 
-                            plugins: {
+    if (accessRecommendations.length === 0) {
 
-                                legend: {
-                                    display: false
-                                },
+        container.innerHTML =
+            `<div class="empty">
+                No access-review recommendations detected.
+            </div>`;
 
-                                tooltip: {
+        return;
 
-                                    callbacks: {
+    }
 
-                                        label:
-                                            function(context) {
 
-                                                return (
-                                                    " Findings: " +
-                                                    context.raw
-                                                );
+    accessRecommendations.forEach(item => {
 
-                                            }
+        const card =
+            document.createElement("div");
 
-                                    }
+        card.className =
+            "access-card";
 
-                                }
+        const member =
+            item.Member ||
+            item.Login ||
+            "Unknown";
 
-                            },
+        const repo =
+            item.Repository ||
+            "Unknown";
 
-                            scales: {
+        const permission =
+            item.Permission ||
+            "Unknown";
 
-                                x: {
+        const score =
+            item.ContributionScore ??
+            0;
 
-                                    beginAtZero: true,
+        const level =
+            item.ContributionLevel ||
+            "None";
 
-                                    ticks: {
+        const reason =
+            item.Reason ||
+            "Contribution activity requires review.";
 
-                                        color: "#94a3b8",
 
-                                        precision: 0
+        card.innerHTML = `
 
-                                    },
+            <div class="access-top">
 
-                                    grid: {
-                                        color: "#263247"
-                                    }
+                <div>
 
-                                },
+                    <div class="member-name">
+                        ${escapeHtml(member)}
+                    </div>
 
-                                y: {
+                    <div class="repo-meta">
+                        ${escapeHtml(repo)}
+                    </div>
 
-                                    ticks: {
+                </div>
 
-                                        color: "#cbd5e1",
+                <div class="review-badge">
+                    HUMAN REVIEW
+                </div>
 
-                                        font: {
-                                            size: 11
-                                        }
+            </div>
 
-                                    },
 
-                                    grid: {
-                                        display: false
-                                    }
+            <div class="access-details">
 
-                                }
+                <div class="access-detail">
 
-                            }
+                    <div class="access-detail-label">
+                        Permission
+                    </div>
 
-                        }
-
-                    }
-                );
-
-        }
-
-
-        // =========================================
-        // Repository overview
-        // =========================================
-
-        function renderRepositories(
-            findings
-        ) {
-
-            const repositories = {};
-
-
-            findings.forEach(function (finding) {
-
-                const repo =
-                    finding.Repository;
-
-
-                if (!repositories[repo]) {
-
-                    repositories[repo] = {
-
-                        count: 0,
-
-                        highest: "Low"
-
-                    };
-
-                }
-
-
-                repositories[repo].count++;
-
-
-                if (
-                    severityRank(
-                        finding.Severity
-                    ) >
-                    severityRank(
-                        repositories[repo].highest
-                    )
-                ) {
-
-                    repositories[repo].highest =
-                        finding.Severity;
-
-                }
-
-            });
-
-
-            const container =
-                document.getElementById(
-                    "repositoryGrid"
-                );
-
-
-            container.innerHTML = "";
-
-
-            Object.keys(repositories)
-                .sort()
-                .forEach(function (repo) {
-
-                    const item =
-                        repositories[repo];
-
-
-                    const card =
-                        document.createElement(
-                            "div"
-                        );
-
-
-                    card.className =
-                        "repo-card";
-
-
-                    card.innerHTML = `
-
-                        <div class="repo-name">
-                            ${escapeHtml(repo)}
-                        </div>
-
-                        <div class="repo-risk">
-                            ${item.count}
-                            finding${item.count === 1 ? "" : "s"}
-                            • Highest: ${escapeHtml(item.highest)}
-                        </div>
-
-                    `;
-
-
-                    container.appendChild(card);
-
-                });
-
-        }
-
-
-        // =========================================
-        // Detailed findings table
-        // =========================================
-
-        function renderFindingsTable(
-            findings
-        ) {
-
-            const table =
-                document.getElementById(
-                    "findingsTable"
-                );
-
-
-            table.innerHTML = "";
-
-
-            findings.forEach(function (finding) {
-
-                const row =
-                    document.createElement(
-                        "tr"
-                    );
-
-
-                const badgeClass =
-                    getSeverityClass(
-                        finding.Severity
-                    );
-
-
-                row.innerHTML = `
-
-                    <td>
-                        <span class="repository">
-                            ${escapeHtml(
-                                finding.Repository
-                            )}
-                        </span>
-                    </td>
-
-                    <td>
+                    <div class="access-detail-value">
                         ${escapeHtml(
-                            finding.FindingType
+                            permission.toUpperCase()
                         )}
-                    </td>
+                    </div>
 
-                    <td>
-
-                        <span class="
-                            severity-badge
-                            ${badgeClass}
-                        ">
-                            ${escapeHtml(
-                                finding.Severity
-                            )}
-                        </span>
-
-                    </td>
-
-                    <td>
-
-                        <div class="
-                            finding-description
-                        ">
-                            ${escapeHtml(
-                                finding.Description
-                            )}
-                        </div>
-
-                    </td>
-
-                    <td>
-
-                        <div class="
-                            recommendation
-                        ">
-                            ${escapeHtml(
-                                finding.Recommendation
-                            )}
-                        </div>
-
-                    </td>
-
-                `;
+                </div>
 
 
-                table.appendChild(row);
+                <div class="access-detail">
+
+                    <div class="access-detail-label">
+                        Score
+                    </div>
+
+                    <div class="access-detail-value">
+                        ${score}/100
+                    </div>
+
+                </div>
+
+
+                <div class="access-detail">
+
+                    <div class="access-detail-label">
+                        Level
+                    </div>
+
+                    <div class="access-detail-value">
+                        ${escapeHtml(level)}
+                    </div>
+
+                </div>
+
+
+                <div class="access-detail">
+
+                    <div class="access-detail-label">
+                        Removal
+                    </div>
+
+                    <div class="access-detail-value">
+                        NOT AUTOMATED
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="access-reason">
+
+                <strong>
+                    Evidence:
+                </strong>
+
+                ${escapeHtml(reason)}
+
+            </div>
+
+        `;
+
+        container.appendChild(card);
+
+    });
+
+}
+
+
+/* ==========================================================
+   CONTRIBUTION TABLE
+========================================================== */
+
+function renderContributionTable() {
+
+    const table =
+        document.getElementById(
+            "contributionTable"
+        );
+
+    table.innerHTML = "";
+
+    if (contributions.length === 0) {
+
+        table.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="9"
+                    class="empty"
+                >
+                    No contribution data available.
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    contributions.forEach(item => {
+
+        const row =
+            document.createElement("tr");
+
+        const score =
+            Number(
+                item.ContributionScore || 0
+            );
+
+        const level =
+            item.ContributionLevel ||
+            "None";
+
+        const levelClass =
+            "level-" +
+            String(level)
+                .toLowerCase();
+
+
+        row.innerHTML = `
+
+            <td>
+
+                <strong>
+                    ${escapeHtml(
+                        item.Member ||
+                        "Unknown"
+                    )}
+                </strong>
+
+            </td>
+
+
+            <td>
+
+                ${escapeHtml(
+                    item.Repository ||
+                    "Unknown"
+                )}
+
+            </td>
+
+
+            <td>
+
+                ${escapeHtml(
+                    item.Permission ||
+                    "Unknown"
+                )}
+
+            </td>
+
+
+            <td>
+
+                ${item.CommitsAuthored || 0}
+
+            </td>
+
+
+            <td>
+
+                ${item.PullRequestsOpened || 0}
+
+            </td>
+
+
+            <td>
+
+                ${item.PullRequestsMerged || 0}
+
+            </td>
+
+
+            <td>
+
+                ${item.ReviewsSubmitted || 0}
+
+            </td>
+
+
+            <td>
+
+                <div class="score-bar-wrapper">
+
+                    <span class="score">
+                        ${score}
+                    </span>
+
+                    <div class="score-bar">
+
+                        <div
+                            class="score-fill"
+                            style="width:${Math.min(score,100)}%"
+                        ></div>
+
+                    </div>
+
+                </div>
+
+            </td>
+
+
+            <td>
+
+                <span
+                    class="level ${levelClass}"
+                >
+                    ${escapeHtml(
+                        level.toUpperCase()
+                    )}
+                </span>
+
+            </td>
+
+        `;
+
+        table.appendChild(row);
+
+    });
+
+}
+
+
+/* ==========================================================
+   FINDINGS TABLE
+========================================================== */
+
+function renderFindingsTable() {
+
+    const table =
+        document.getElementById(
+            "findingsTable"
+        );
+
+    table.innerHTML = "";
+
+
+    const search =
+        String(
+            document.getElementById(
+                "findingSearch"
+            ).value || ""
+        ).toLowerCase();
+
+
+    const severityFilter =
+        document.getElementById(
+            "severityFilter"
+        ).value;
+
+
+    const severityOrder = {
+
+        critical: 1,
+        high: 2,
+        medium: 3,
+        low: 4
+
+    };
+
+
+    const filtered =
+        findings
+            .filter(finding => {
+
+                const severity =
+                    getSeverity(finding);
+
+                const text =
+                    (
+                        getRepository(finding) +
+                        " " +
+                        getFindingType(finding) +
+                        " " +
+                        getDescription(finding) +
+                        " " +
+                        getRecommendation(finding)
+                    ).toLowerCase();
+
+                const matchesSearch =
+                    !search ||
+                    text.includes(search);
+
+                const matchesSeverity =
+                    severityFilter === "all" ||
+                    severity === severityFilter;
+
+                return (
+                    matchesSearch &&
+                    matchesSeverity
+                );
+
+            })
+            .sort((a, b) => {
+
+                return (
+                    (
+                        severityOrder[
+                            getSeverity(a)
+                        ] || 99
+                    ) -
+                    (
+                        severityOrder[
+                            getSeverity(b)
+                        ] || 99
+                    )
+                );
 
             });
 
-        }
+
+    document.getElementById(
+        "findingSummary"
+    ).textContent =
+        `${filtered.length} of ${findings.length} findings`;
 
 
-        // =========================================
-        // Severity ranking
-        // =========================================
+    if (filtered.length === 0) {
 
-        function severityRank(
-            severity
-        ) {
+        table.innerHTML = `
 
-            const ranks = {
+            <tr>
 
-                Low: 1,
-                Medium: 2,
-                High: 3,
-                Critical: 4
+                <td
+                    colspan="5"
+                    class="empty"
+                >
+                    No matching security findings.
+                </td>
 
-            };
+            </tr>
 
+        `;
 
-            return ranks[severity] || 0;
+        return;
 
-        }
-
-
-        // =========================================
-        // Severity badge
-        // =========================================
-
-        function getSeverityClass(
-            severity
-        ) {
-
-            switch (severity) {
-
-                case "Critical":
-                    return "badge-critical";
-
-                case "High":
-                    return "badge-high";
-
-                case "Medium":
-                    return "badge-medium";
-
-                case "Low":
-                    return "badge-low";
-
-                default:
-                    return "";
-
-            }
-
-        }
+    }
 
 
-        // =========================================
-        // HTML escaping
-        // =========================================
+    filtered.forEach(finding => {
 
-        function escapeHtml(
-            value
-        ) {
+        const severity =
+            getSeverity(finding);
 
-            if (
-                value === null ||
-                value === undefined
-            ) {
+        const row =
+            document.createElement("tr");
 
-                return "";
+        row.innerHTML = `
 
-            }
+            <td>
 
+                <span
+                    class="severity-text severity-${severity}"
+                >
+                    ${severity.toUpperCase()}
+                </span>
 
-            return String(value)
-
-                .replace(
-                    /&/g,
-                    "&amp;"
-                )
-
-                .replace(
-                    /</g,
-                    "&lt;"
-                )
-
-                .replace(
-                    />/g,
-                    "&gt;"
-                )
-
-                .replace(
-                    /"/g,
-                    "&quot;"
-                )
-
-                .replace(
-                    /'/g,
-                    "&#039;"
-                );
-
-        }
+            </td>
 
 
-        // =========================================
-        // Start dashboard
-        // =========================================
+            <td>
 
-        loadSecurityReport();
+                <strong>
+                    ${escapeHtml(
+                        getRepository(finding)
+                    )}
+                </strong>
 
-    </script>
+            </td>
+
+
+            <td>
+
+                <div class="finding-title">
+
+                    ${escapeHtml(
+                        getFindingType(finding)
+                    )}
+
+                </div>
+
+            </td>
+
+
+            <td>
+
+                <div class="finding-description">
+
+                    ${escapeHtml(
+                        getDescription(finding)
+                    )}
+
+                </div>
+
+            </td>
+
+
+            <td>
+
+                <div class="recommendation">
+
+                    ${escapeHtml(
+                        getRecommendation(finding)
+                    )}
+
+                </div>
+
+            </td>
+
+        `;
+
+        table.appendChild(row);
+
+    });
+
+}
+
+
+/* ==========================================================
+   NAVIGATION
+========================================================== */
+
+function showSection(section, button) {
+
+    document
+        .querySelectorAll(".nav button")
+        .forEach(btn => {
+
+            btn.classList.remove(
+                "active"
+            );
+
+        });
+
+    button.classList.add("active");
+
+
+    if (section === "overview") {
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+        return;
+
+    }
+
+
+    const target =
+        document.getElementById(
+            section
+        );
+
+    if (target) {
+
+        target.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+    }
+
+}
+
+
+/* ==========================================================
+   DASHBOARD RENDER
+========================================================== */
+
+function renderDashboard() {
+
+    renderKPIs();
+
+    renderPosture();
+
+    renderSeverityChart();
+
+    renderTypeChart();
+
+    renderRepositoryRisk();
+
+    renderAccessReviews();
+
+    renderContributionTable();
+
+    renderFindingsTable();
+
+    document.getElementById(
+        "scanTime"
+    ).textContent =
+        "Data loaded from local reports";
+
+}
+
+
+/* ==========================================================
+   ERROR HANDLING
+========================================================== */
+
+window.addEventListener(
+    "error",
+    function(event) {
+
+        console.error(
+            "Dashboard error:",
+            event.error
+        );
+
+    }
+);
+
+
+/* ==========================================================
+   START
+========================================================== */
+
+loadDashboardData();
+
+</script>
 
 </body>
 </html>
